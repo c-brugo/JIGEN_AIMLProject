@@ -84,13 +84,13 @@ class Trainer:
             class_l_ordered = class_l[torch.nonzero(mask)][:, 0]
 
             mask_target = class_l_ordered != -1
-            data_ordered = data_ordered[torch.nonzero(mask_target)][:,0]
-            class_l_ordered = class_l_ordered[torch.nonzero(mask_target)][:, 0]
+            data_ordered_source = data_ordered[torch.nonzero(mask_target)][:,0]
+            class_l_ordered_source = class_l_ordered[torch.nonzero(mask_target)][:, 0]
 
 
             #CLASS LOSS
-            class_logit = self.model(data_ordered)
-            class_loss = criterion(class_logit, class_l_ordered)
+            class_logit = self.model(data_ordered_source)
+            class_loss = criterion(class_logit, class_l_ordered_source)
             _, cls_pred = class_logit.max(dim=1)
 
             loss = class_loss
