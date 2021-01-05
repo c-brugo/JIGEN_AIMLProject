@@ -5,6 +5,7 @@ Models factor
 from models import alexnet
 from models import resnet
 from models import jigen_alexnet
+from models import jigen_resnet
 
 nets_map = {
     'alexnet': alexnet.alexnet,
