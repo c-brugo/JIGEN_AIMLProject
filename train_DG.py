@@ -66,7 +66,7 @@ class Trainer:
     def _do_epoch(self):
         criterion = nn.CrossEntropyLoss()
         self.model.train()
-        for it, (data, class_l) in enumerate(self.source_loader):
+        for it, (data, class_l, _) in enumerate(self.source_loader):
 
             data, class_l = data.to(self.device), class_l.to(self.device)
 
