@@ -1,9 +1,15 @@
+"""
+Models factor
+"""
+
 from models import alexnet
 from models import resnet
+from models import jigen_alexnet
 
 nets_map = {
     'alexnet': alexnet.alexnet,
-    'resnet18': resnet.resnet18
+    'resnet18': resnet.resnet18,
+    'jigen_alexnet': jigen_alexnet.jigen_alexnet
 }
 
 
