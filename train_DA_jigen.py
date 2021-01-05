@@ -84,8 +84,8 @@ class Trainer:
             class_l_ordered = class_l[torch.nonzero(mask)][:, 0]
 
             mask_target = class_l_ordered != -1
-            data_ordered = data[torch.nonzero(mask_target)][:,0]
-            class_l_ordered = class_l[torch.nonzero(mask_target)][:, 0]
+            data_ordered = data_ordered[torch.nonzero(mask_target)][:,0]
+            class_l_ordered = class_l_ordered[torch.nonzero(mask_target)][:, 0]
 
 
             #CLASS LOSS
