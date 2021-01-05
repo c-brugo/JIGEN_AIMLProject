@@ -108,7 +108,7 @@ class Trainer:
 
             self.optimizer.step()
 
-
+            class_l = class_l_ordered_source
             self.logger.log(it, len(self.source_loader),
                             {"Class Loss ": class_loss.item(),
                              "Jigsaw Loss ": perm_loss.item()},
