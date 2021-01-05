@@ -32,6 +32,7 @@ def get_args():
     parser.add_argument("--learning_rate", "-l", type=float, default=.001, help="Learning rate")
     parser.add_argument("--epochs", "-e", type=int, default=30, help="Number of epochs")
     parser.add_argument("--n_classes", "-c", type=int, default=7, help="Number of classes")
+    parser.add_argument("--n_perm", "-p", type=int, default=30, help="Number of jigsaw permutations possible (excluded the ordered one)")
     parser.add_argument("--network", choices=model_factory.nets_map.keys(), default="jigen_resnet18", help="Which network to use")
     parser.add_argument("--val_size", type=float, default="0.1", help="Validation size (between 0 and 1)")
     parser.add_argument("--train_all", type=bool, default=True, help="If true, all network weights will be trained")
