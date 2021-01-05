@@ -15,7 +15,7 @@ available_datasets = pacs_datasets
 def jig_transformer(img):
     return img, 0
 
-def get_train_dataloader(args, beta = None):
+def get_train_dataloader(args, beta = None, DA = False):
 
     dataset_list = args.source
     assert isinstance(dataset_list, list)
@@ -37,6 +37,18 @@ def get_train_dataloader(args, beta = None):
 
         val_dataset = TestDataset(name_val, labels_val, args.path_dataset, img_transformer=val_trasformer)
         val_datasets.append(val_dataset)
+
+    #in case of domain adaptation, add the target domain datasets with no labels
+    if DA:
+        target_dataset_list = args.target
+        if type(target_dataset_list) is not list:
+            target_dataset_list = [target_dataset_list]
+        for target_dname in target_dataset_list:
+            name_train, name_val, labels_train, labels_val = get_split_dataset_info(join(dirname(__file__), 'txt_lists', target_dname+'.txt'), args.val_size)
+            labels_train = [-1 for i in range(len(labels_train))]
+            target_train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=jig_transformer, beta=beta)
+            datasets.append(target_train_dataset)
+
 
     dataset = ConcatDataset(datasets)
     val_dataset = ConcatDataset(val_datasets)

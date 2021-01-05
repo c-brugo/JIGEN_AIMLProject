@@ -9,7 +9,8 @@ from models import jigen_alexnet
 nets_map = {
     'alexnet': alexnet.alexnet,
     'resnet18': resnet.resnet18,
-    'jigen_alexnet': jigen_alexnet.jigen_alexnet
+    'jigen_alexnet': jigen_alexnet.jigen_alexnet,
+    'jigen_resnet18': jigen_resnet.jigen_resnet18,
 }
 
 
