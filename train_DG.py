@@ -57,7 +57,7 @@ class Trainer:
 
         self.test_loaders = {"val": self.val_loader, "test": self.target_loader}
         self.len_dataloader = len(self.source_loader)
-        print("Dataset size: train %d, val %d, test %d" % (len(self.source_loader.dataset), len(self.val_loader.dataset), len(self.target_loader.dataset)))
+        #print("Dataset size: train %d, val %d, test %d" % (len(self.source_loader.dataset), len(self.val_loader.dataset), len(self.target_loader.dataset)))
 
         self.optimizer, self.scheduler = get_optim_and_scheduler(model, args.epochs, args.learning_rate, args.train_all)
 
@@ -119,10 +119,10 @@ class Trainer:
         val_res = self.results["val"]
         test_res = self.results["test"]
         idx_best = val_res.argmax()
-        print("Best val %g, corresponding test %g - best test: %g" % (val_res.max(), test_res[idx_best], test_res.max()))
+        print("{'best_val' : %g, 'test_best_val' : %g - 'best_test' : %g" % (val_res.max(), test_res[idx_best], test_res.max()))
         self.logger.save_best(test_res[idx_best], test_res.max())
-        return val_res.max(), test_res[idx_best], test_res.max()
-        #return self.logger, self.model
+        #return val_res.max(), test_res[idx_best], test_res.max()
+        return self.logger, self.model
 
 
 def main():
