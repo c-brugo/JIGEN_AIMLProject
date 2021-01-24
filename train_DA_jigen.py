@@ -37,6 +37,7 @@ def get_args():
     parser.add_argument("--val_size", type=float, default="0.1", help="Validation size (between 0 and 1)")
     parser.add_argument("--train_all", type=bool, default=True, help="If true, all network weights will be trained")
     parser.add_argument("--alpha", type=float, default=0.9, help="Weight of jigsaw resolution")
+    parser.add_argument("--alpha_t", type=float, default=0.9, help="Weight of jigsaw resolution for target domain data")
     parser.add_argument("--beta", type=float, default=0.4, help="Fraction of shuffled images in the dataset")
 
     # tensorboard logger
@@ -68,6 +69,7 @@ class Trainer:
         self.n_perm = args.n_perm
 
         self.alpha = args.alpha
+        self.alpha_t = args.alpha_t
 
     def _do_epoch(self):
         criterion = nn.CrossEntropyLoss()
@@ -83,9 +85,9 @@ class Trainer:
             data_ordered = data[torch.nonzero(mask)][:,0]
             class_l_ordered = class_l[torch.nonzero(mask)][:, 0]
 
-            mask_target = class_l_ordered != -1
-            data_ordered_source = data_ordered[torch.nonzero(mask_target)][:,0]
-            class_l_ordered_source = class_l_ordered[torch.nonzero(mask_target)][:, 0]
+            mask_ordered_source = class_l_ordered != -1
+            data_ordered_source = data_ordered[torch.nonzero(mask_ordered_source)][:,0]
+            class_l_ordered_source = class_l_ordered[torch.nonzero(mask_ordered_source)][:, 0]
 
 
             #CLASS LOSS
@@ -96,12 +98,29 @@ class Trainer:
             loss = class_loss
             loss.backward()
 
-            #JIGSAW LOSS
-            perm_logit = self.model(data, alpha = self.alpha)
-            perm_loss = criterion(perm_logit, perm_l)
-            _, perm_pred = perm_logit.max(dim=1)
+            #JIGSAW LOSS (SOURCE)
+            mask_source = class_l != -1
+            data_source = data[torch.nonzero(mask_source)][:,0]
+            perm_l_source = perm_l[torch.nonzero(mask_source)][:,0]
 
-            loss = perm_loss
+            perm_source_logit = self.model(data_source, alpha = self.alpha)
+            perm_source_loss = criterion(perm_source_logit, perm_l_source)
+            _, perm_source_pred = perm_source_logit.max(dim=1)
+
+            loss = perm_source_loss
+            loss.backward()
+
+
+            #JIGSAW LOSS (TARGET)
+            mask_target = class_l == -1
+            data_target = data[torch.nonzero(mask_target)][:,0]
+            perm_l_target = perm_l[torch.nonzero(mask_target)][:,0]
+
+            perm_target_logit = self.model(data_target, alpha = self.alpha_t)
+            perm_target_loss = criterion(perm_target_logit, perm_l_target)
+            _, perm_target_pred = perm_target_logit.max(dim=1)
+
+            loss = perm_target_loss
             loss.backward()
 
 
@@ -111,11 +130,13 @@ class Trainer:
             class_l = class_l_ordered_source
             self.logger.log(it, len(self.source_loader),
                             {"Class Loss ": class_loss.item(),
-                             "Jigsaw Loss ": perm_loss.item()},
+                             "Jigsaw Source Loss ": perm_source_loss.item(),
+                             "Jigsaw Target Loss ": perm_target_loss.item()},
                             {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item(),
-                             "Jigsaw Accuracy ": torch.sum(perm_pred == perm_l.data).item()},
+                             "Jigsaw Source Accuracy ": torch.sum(perm_source_pred == perm_l_source.data).item(),
+                             "Jigsaw Target Accuracy ": torch.sum(perm_target_pred == perm_l_target.data).item()},
                             data.shape[0])
-            del loss, class_loss, class_logit, perm_loss, perm_logit
+            del loss, class_loss, class_logit, perm_source_loss, perm_source_logit, perm_target_loss, perm_source_logit
 
         self.model.eval()
         with torch.no_grad():

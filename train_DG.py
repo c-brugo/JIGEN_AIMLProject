@@ -121,7 +121,8 @@ class Trainer:
         idx_best = val_res.argmax()
         print("Best val %g, corresponding test %g - best test: %g" % (val_res.max(), test_res[idx_best], test_res.max()))
         self.logger.save_best(test_res[idx_best], test_res.max())
-        return self.logger, self.model
+        return val_res.max(), test_res[idx_best], test_res.max()
+        #return self.logger, self.model
 
 
 def main():
