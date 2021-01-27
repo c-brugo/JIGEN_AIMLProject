@@ -99,44 +99,56 @@ class Trainer:
             loss.backward()
 
             #JIGSAW LOSS (SOURCE)
-            mask_source = class_l != -1
-            data_source = data[torch.nonzero(mask_source)][:,0]
-            perm_l_source = perm_l[torch.nonzero(mask_source)][:,0]
+            if self.alpha is not 0:
+                mask_source = class_l != -1
+                data_source = data[torch.nonzero(mask_source)][:,0]
+                perm_l_source = perm_l[torch.nonzero(mask_source)][:,0]
 
-            perm_source_logit = self.model(data_source, alpha = self.alpha)
-            perm_source_loss = criterion(perm_source_logit, perm_l_source)
-            _, perm_source_pred = perm_source_logit.max(dim=1)
+                perm_source_logit = self.model(data_source, alpha = self.alpha)
+                perm_source_loss = criterion(perm_source_logit, perm_l_source)
+                _, perm_source_pred = perm_source_logit.max(dim=1)
 
-            loss = perm_source_loss
-            loss.backward()
+                loss = perm_source_loss
+                loss.backward()
 
 
             #JIGSAW LOSS (TARGET)
-            mask_target = class_l == -1
-            data_target = data[torch.nonzero(mask_target)][:,0]
-            perm_l_target = perm_l[torch.nonzero(mask_target)][:,0]
+            if self.alpha_t is not 0:
+                mask_target = class_l == -1
+                data_target = data[torch.nonzero(mask_target)][:,0]
+                perm_l_target = perm_l[torch.nonzero(mask_target)][:,0]
 
-            perm_target_logit = self.model(data_target, alpha = self.alpha_t)
-            perm_target_loss = criterion(perm_target_logit, perm_l_target)
-            _, perm_target_pred = perm_target_logit.max(dim=1)
+                perm_target_logit = self.model(data_target, alpha = self.alpha_t)
+                perm_target_loss = criterion(perm_target_logit, perm_l_target)
+                _, perm_target_pred = perm_target_logit.max(dim=1)
 
-            loss = perm_target_loss
-            loss.backward()
+                loss = perm_target_loss
+                loss.backward()
 
 
 
             self.optimizer.step()
 
             class_l = class_l_ordered_source
+            losses_log = {"Class Loss ": class_loss.item()}
+            accuracy_log = {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item()}
+
+            if self.alpha is not 0:
+                losses_log["Jigsaw Source Loss "] = perm_source_loss.item()
+                accuracy_log["Jigsaw Source Accuracy "] = torch.sum(perm_source_pred == perm_l_source.data).item()
+            if self.alpha_t is not 0:
+                losses_log["Jigsaw Target Loss "] = perm_target_loss.item()
+                accuracy_log["Jigsaw Target Accuracy "] = torch.sum(perm_target_pred == perm_l_target.data).item()
+
             self.logger.log(it, len(self.source_loader),
-                            {"Class Loss ": class_loss.item(),
-                             "Jigsaw Source Loss ": perm_source_loss.item(),
-                             "Jigsaw Target Loss ": perm_target_loss.item()},
-                            {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item(),
-                             "Jigsaw Source Accuracy ": torch.sum(perm_source_pred == perm_l_source.data).item(),
-                             "Jigsaw Target Accuracy ": torch.sum(perm_target_pred == perm_l_target.data).item()},
+                            losses_log,
+                            accuracy_log,
                             data.shape[0])
-            del loss, class_loss, class_logit, perm_source_loss, perm_source_logit, perm_target_loss, perm_source_logit
+            del loss, class_loss, class_logit
+            if self.alpha is not 0:
+                del perm_source_loss, perm_source_logit
+            if self.alpha_t is not 0:
+                del perm_target_loss, perm_source_logit
 
         self.model.eval()
         with torch.no_grad():

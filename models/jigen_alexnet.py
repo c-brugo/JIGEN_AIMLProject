@@ -58,7 +58,7 @@ class JIGEN_AlexNet(nn.Module):
         return [{"params": self.features.parameters(), "lr": 0.},
                 {"params": chain(self.classifier.parameters(), self.class_classifier.parameters(), self.jigsaw_classifier.parameters()), "lr": base_lr}]
 
-    def forward(self, x, alpha = None):
+    def forward(self, x, alpha = 0):
 
         #the pre-trained model used is obtained with "caffe" framework so, in order to use these weights,
         # we had to transform the torch input in the same range of the input used to train this model.
@@ -71,7 +71,7 @@ class JIGEN_AlexNet(nn.Module):
         x = self.features(x*57.6)
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
-        if alpha is not None:
+        if alpha is not 0:
             x = JigenLayerF.apply(x, alpha)
             x = self.jigsaw_classifier(x)
         else:

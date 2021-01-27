@@ -92,25 +92,33 @@ class Trainer:
             loss.backward()
 
             #JIGSAW LOSS
-            perm_logit = self.model(data, alpha = self.alpha)
-            perm_loss = criterion(perm_logit, perm_l)
-            _, perm_pred = perm_logit.max(dim=1)
+            if self.alpha is not 0:
+                perm_logit = self.model(data, alpha = self.alpha)
+                perm_loss = criterion(perm_logit, perm_l)
+                _, perm_pred = perm_logit.max(dim=1)
 
-            loss = perm_loss
-            loss.backward()
+                loss = perm_loss
+                loss.backward()
 
 
 
             self.optimizer.step()
 
             class_l = class_l_ordered
-            self.logger.log(it, len(self.source_loader),
-                            {"Class Loss ": class_loss.item(),
-                             "Jigsaw Loss ": perm_loss.item()},
-                            {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item(),
-                             "Jigsaw Accuracy ": torch.sum(perm_pred == perm_l.data).item()},
-                            data.shape[0])
-            del loss, class_loss, class_logit, perm_loss, perm_logit
+            if self.alpha is not 0:
+                self.logger.log(it, len(self.source_loader),
+                                {"Class Loss ": class_loss.item(),
+                                "Jigsaw Loss ": perm_loss.item()},
+                                {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item(),
+                                "Jigsaw Accuracy ": torch.sum(perm_pred == perm_l.data).item()},
+                                data.shape[0])
+                del loss, class_loss, class_logit, perm_loss, perm_logit
+            else:
+                self.logger.log(it, len(self.source_loader),
+                                {"Class Loss ": class_loss.item()},
+                                {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item()},
+                                data.shape[0])
+                del loss, class_loss, class_logit
 
         self.model.eval()
         with torch.no_grad():

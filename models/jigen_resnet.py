@@ -62,7 +62,7 @@ class JIGEN_ResNet(nn.Module):
     def is_patch_based(self):
         return False
 
-    def forward(self, x, alpha = None, **kwargs):
+    def forward(self, x, alpha = 0, **kwargs):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -76,7 +76,7 @@ class JIGEN_ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
-        if alpha is not None:
+        if alpha is not 0:
             x = JigenLayerF.apply(x, alpha)
             x = self.jigsaw_classifier(x)
         else:

@@ -45,7 +45,7 @@ def get_split_dataset_info(txt_list, val_percentage):
 
 
 class Dataset(data.Dataset):
-    def __init__(self, names, labels, path_dataset, img_transformer=None, jig_transformer=None, beta=None):
+    def __init__(self, names, labels, path_dataset, img_transformer=None, jig_transformer=None, beta=0):
         self.data_path = path_dataset
         self.names = names
         self.labels = labels
@@ -60,7 +60,7 @@ class Dataset(data.Dataset):
         img = self._image_transformer(img)
         permutation = 0
 
-        if self.beta is not None and self.beta < random():
+        if random() < self.beta:
             img, permutation = self._jigsaw_transformer(img)
 
         return img, int(self.labels[index]), permutation

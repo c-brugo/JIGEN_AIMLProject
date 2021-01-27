@@ -15,7 +15,7 @@ available_datasets = pacs_datasets
 def jig_transformer(img):
     return img, 0
 
-def get_train_dataloader(args, beta = None, DA = False):
+def get_train_dataloader(args, beta = 0, DA = False):
 
     dataset_list = args.source
     assert isinstance(dataset_list, list)
@@ -28,7 +28,7 @@ def get_train_dataloader(args, beta = None, DA = False):
     for dname in dataset_list:
         name_train, name_val, labels_train, labels_val = get_split_dataset_info(join(dirname(__file__), 'txt_lists', dname+'.txt'), args.val_size)
 
-        if beta is not None:
+        if beta>0:
             train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=jig_transformer, beta=beta)
         else:
             train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer)
