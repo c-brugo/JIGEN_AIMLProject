@@ -22,8 +22,8 @@ def get_args():
     # data augmentation
     parser.add_argument("--min_scale", default=0.8, type=float, help="Minimum scale percent")
     parser.add_argument("--max_scale", default=1.0, type=float, help="Maximum scale percent")
-    parser.add_argument("--random_horiz_flip", default=0.0, type=float, help="Chance of random horizontal flip")
-    parser.add_argument("--jitter", default=0.0, type=float, help="Color jitter amount")
+    parser.add_argument("--random_horiz_flip", default=0.5, type=float, help="Chance of random horizontal flip")
+    parser.add_argument("--jitter", default=0.4, type=float, help="Color jitter amount")
     parser.add_argument("--random_grayscale", default=0.1, type=float,help="Randomly greyscale the image")
 
     # training parameters
@@ -119,7 +119,7 @@ class Trainer:
                 print("\"final_{}\" : {}".format(str(phase), class_acc))
 
     def do_training(self):
-        self.logger = Logger(self.args, update_frequency=30)
+        self.logger = Logger(self.args, update_frequency=50)
         self.results = {"val": torch.zeros(self.args.epochs), "test": torch.zeros(self.args.epochs)}
 
         for self.current_epoch in range(self.args.epochs):
