@@ -121,17 +121,17 @@ class Trainer:
         idx_best = val_res.argmax()
         print("{'best_val' : %g, 'test_best_val' : %g - 'best_test' : %g" % (val_res.max(), test_res[idx_best], test_res.max()))
         self.logger.save_best(test_res[idx_best], test_res.max())
-        return val_res.max(), test_res[idx_best], test_res.max()
-        #return self.logger, self.model
+        #return val_res.max(), test_res[idx_best], test_res.max()
+        return self.logger, self.model
 
 
 def main():
     args = get_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     trainer = Trainer(args, device)
-    return trainer.do_training()
+    trainer.do_training()
 
 
 if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
-    return main()
+    main()
