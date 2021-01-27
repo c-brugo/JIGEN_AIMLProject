@@ -119,7 +119,7 @@ class Trainer:
         val_res = self.results["val"]
         test_res = self.results["test"]
         idx_best = val_res.argmax()
-        print("{\"best_val\" : %g, \"test_best_val\" : %g, \"best_test\" : %g" % (val_res.max(), test_res[idx_best], test_res.max()))
+        print("{\"best_val\" : %g, \"test_best_val\" : %g, \"best_test\" : %g}" % (val_res.max(), test_res[idx_best], test_res.max()))
         self.logger.save_best(test_res[idx_best], test_res.max())
         #return val_res.max(), test_res[idx_best], test_res.max()
         return self.logger, self.model
