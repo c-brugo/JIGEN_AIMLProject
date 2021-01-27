@@ -180,7 +180,7 @@ class Trainer:
                 print("\"final_{}\" : {}".format(str(phase), class_acc))
 
     def do_training(self):
-        self.logger = Logger(self.args, update_frequency=50)
+        self.logger = Logger(self.args, update_frequency=100)
         self.results = {"val": torch.zeros(self.args.epochs), "test": torch.zeros(self.args.epochs)}
 
         for self.current_epoch in range(self.args.epochs):
