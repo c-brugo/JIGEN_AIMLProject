@@ -92,7 +92,7 @@ class Trainer:
             loss.backward()
 
             #JIGSAW LOSS
-            if self.alpha is not 0:
+            if self.alpha != 0:
                 perm_logit = self.model(data, alpha = self.alpha)
                 perm_loss = criterion(perm_logit, perm_l)
                 _, perm_pred = perm_logit.max(dim=1)
@@ -105,7 +105,7 @@ class Trainer:
             self.optimizer.step()
 
             class_l = class_l_ordered
-            if self.alpha is not 0:
+            if self.alpha != 0:
                 self.logger.log(it, len(self.source_loader),
                                 {"Class Loss ": class_loss.item(),
                                 "Jigsaw Loss ": perm_loss.item()},

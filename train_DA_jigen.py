@@ -99,7 +99,7 @@ class Trainer:
             loss.backward()
 
             #JIGSAW LOSS (SOURCE)
-            if self.alpha is not 0:
+            if self.alpha != 0:
                 mask_source = class_l != -1
                 data_source = data[torch.nonzero(mask_source)][:,0]
                 perm_l_source = perm_l[torch.nonzero(mask_source)][:,0]
@@ -133,7 +133,7 @@ class Trainer:
             losses_log = {"Class Loss ": class_loss.item()}
             accuracy_log = {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item()}
 
-            if self.alpha is not 0:
+            if self.alpha != 0:
                 losses_log["Jigsaw Source Loss "] = perm_source_loss.item()
                 accuracy_log["Jigsaw Source Accuracy "] = torch.sum(perm_source_pred == perm_l_source.data).item()
             if self.alpha_t is not 0:
@@ -145,7 +145,7 @@ class Trainer:
                             accuracy_log,
                             data.shape[0])
             del loss, class_loss, class_logit
-            if self.alpha is not 0:
+            if self.alpha != 0:
                 del perm_source_loss, perm_source_logit
             if self.alpha_t is not 0:
                 del perm_target_loss, perm_source_logit

@@ -76,7 +76,7 @@ class JIGEN_ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
-        if alpha is not 0:
+        if alpha != 0:
             x = JigenLayerF.apply(x, alpha)
             x = self.jigsaw_classifier(x)
         else:
