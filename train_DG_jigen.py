@@ -123,6 +123,8 @@ class Trainer:
         self.model.eval()
         with torch.no_grad():
             for phase, loader in self.test_loaders.items():
+                if phase=="test":
+                    continue
                 total = len(loader.dataset)
                 class_correct = self.do_test(loader)
                 class_acc = float(class_correct) / total
