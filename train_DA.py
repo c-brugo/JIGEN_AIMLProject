@@ -106,6 +106,15 @@ class Trainer:
             _, cls_pred = class_logit.max(dim=1)
             class_correct += torch.sum(cls_pred == class_l.data)
         return class_correct
+    
+    def final_test(self):
+        self.model.eval()
+        with torch.no_grad():
+            for phase, loader in self.test_loaders.items():
+                total = len(loader.dataset)
+                class_correct = self.do_test(loader)
+                class_acc = float(class_correct) / total
+                print("\"final_{}\" : {}".format(str(phase), class_acc))
 
     def do_training(self):
         self.logger = Logger(self.args, update_frequency=30)
@@ -119,7 +128,7 @@ class Trainer:
         val_res = self.results["val"]
         test_res = self.results["test"]
         idx_best = val_res.argmax()
-        print("Best val %g, corresponding test %g - best test: %g" % (val_res.max(), test_res[idx_best], test_res.max()))
+        print("{\"best_val\" : %g, \"best_test\" : %g}" % (val_res.max(), test_res.max()))
         self.logger.save_best(test_res[idx_best], test_res.max())
         return self.logger, self.model
 
@@ -129,6 +138,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     trainer = Trainer(args, device)
     trainer.do_training()
+    trainer.final_test()
 
 
 if __name__ == "__main__":
