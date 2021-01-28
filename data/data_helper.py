@@ -77,7 +77,7 @@ def get_train_transformers(args):
     if args.random_grayscale:
         img_tr.append(transforms.RandomGrayscale(args.random_grayscale))
 
-    img_tr = img_tr + [transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+    #img_tr = img_tr + [transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
 
     return transforms.Compose(img_tr)
 

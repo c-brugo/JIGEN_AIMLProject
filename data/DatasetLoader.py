@@ -43,6 +43,12 @@ def get_split_dataset_info(txt_list, val_percentage):
     names, labels = _dataset_info(txt_list)
     return get_random_subset(names, labels, val_percentage)
 
+def image_tensor_transformer():
+    img_tr = [transforms.ToTensor(),
+              transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+
+    return transforms.Compose(img_tr)
+
 
 class Dataset(data.Dataset):
     def __init__(self, names, labels, path_dataset, img_transformer=None, jig_transformer=None, beta=0):
@@ -51,6 +57,7 @@ class Dataset(data.Dataset):
         self.labels = labels
         self._image_transformer = img_transformer
         self._jigsaw_transformer = jig_transformer
+        self._tensor_transformer = image_tensor_transformer()
         self.beta = beta
 
     def __getitem__(self, index):
@@ -62,6 +69,8 @@ class Dataset(data.Dataset):
 
         if random() < self.beta:
             img, permutation = self._jigsaw_transformer(img)
+
+        img = self._tensor_transformer(img)
 
         return img, int(self.labels[index]), permutation
 
