@@ -8,6 +8,7 @@ from data.data_helper import available_datasets
 from models import model_factory
 from optimizer.optimizer_helper import get_optim_and_scheduler
 from utils.Logger import Logger
+from data.DatasetEdit import DatasetEdit
 import numpy as np
 
 
@@ -38,6 +39,7 @@ def get_args():
     parser.add_argument("--train_all", type=bool, default=True, help="If true, all network weights will be trained")
     parser.add_argument("--alpha", type=float, default=0.9, help="Weight of jigsaw resolution")
     parser.add_argument("--beta", type=float, default=0.4, help="Fraction of shuffled images in the dataset")
+    parser.add_argument("--grid", type=int, default=3, help="Dimension of grid NxN")
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
@@ -54,7 +56,10 @@ class Trainer:
         model = model_factory.get_network(args.network)(classes=args.n_classes, permutations = args.n_perm)
         self.model = model.to(device)
 
-        self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta)
+        self.grid_size = args.grid
+        self.jigsaw_editor = DatasetEdit(args.grid, args.image_size)
+
+        self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta, self_sup_transformer = self.jigsaw_editor.edit)
         self.target_loader = data_helper.get_val_dataloader(args)
 
 
@@ -68,6 +73,8 @@ class Trainer:
         self.n_perm = args.n_perm
 
         self.alpha = args.alpha
+
+        
 
     def _do_epoch(self):
         criterion = nn.CrossEntropyLoss()

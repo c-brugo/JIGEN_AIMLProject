@@ -138,7 +138,7 @@ class DatasetEdit:
         # Save the image
         #img_name=path.name.split('.')
         #full_img_name=img_name+"_sliced(%d)"+".jpg"%(i+1) # i is the label (1 to 30)
-       #new_img.save(full_img_name)
+        #new_img.save(full_img_name)
         return new_img,i+1
 
     def resize(self, im,size_width,size_height) -> Image:
