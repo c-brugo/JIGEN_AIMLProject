@@ -39,7 +39,7 @@ class DatasetEdit:
         self.pos_auto_x = np.arange(0,img_dim,self.M)
         self.pos_auto_y = np.arange(0,img_dim,self.N)#[y for y in range(0,img_dim,N)]
 
-        self.diff_pos = slice_size^2 # slice_size = 3 so different positions are 9 (3^2) / 2 so 4 / 4 so 16
+        self.diff_pos = slice_size**2 # slice_size = 3 so different positions are 9 (3^2) / 2 so 4 / 4 so 16
         self.P = P
 
         self.permutations()
@@ -72,8 +72,8 @@ class DatasetEdit:
         P_hat = np.delete(P_hat_full,0,0)
         
         n = P_hat.shape[0]
-        print("n: " + n)
-        for i in trange(self.P):
+
+        for i in range(self.P):
             if i==0:
                 j = np.random.randint(n)
                 P = np.array(P_hat[j]).reshape([1,-1])

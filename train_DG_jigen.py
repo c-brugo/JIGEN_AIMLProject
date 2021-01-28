@@ -57,7 +57,7 @@ class Trainer:
         self.model = model.to(device)
 
         self.grid_size = args.grid
-        self.jigsaw_editor = DatasetEdit(args.grid, args.image_size, P = args.n_perm)
+        self.jigsaw_editor = DatasetEdit(slice_size = args.grid, img_dim = args.image_size, P = args.n_perm)
 
         self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta, self_sup_transformer = self.jigsaw_editor.edit)
         self.target_loader = data_helper.get_val_dataloader(args)
