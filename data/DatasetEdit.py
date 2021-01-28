@@ -48,14 +48,14 @@ class DatasetEdit:
 
 
     #used to retrive where to put a sliced image in mosaic.
-    def matrixIndeces(self,index,case):
-        if case == 1: #2x2
+    def matrixIndeces(self,index,slice_size):
+        if slice_size == 2: #2x2
             ind_y = self.mappa2[index][1] # row
             ind_x = self.mappa2[index][0] # column  
-        elif case == 2: #3x3
+        elif slice_size == 3: #3x3
             ind_y = self.mappa3[index][1] # row
             ind_x = self.mappa3[index][0] # column
-        elif case == 3: #4x4
+        elif slice_size == 4: #4x4
             ind_y = self.mappa4[index][1] # row
             ind_x = self.mappa4[index][0] # column
         else:
