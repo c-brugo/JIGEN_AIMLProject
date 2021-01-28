@@ -153,7 +153,7 @@ class Trainer:
             if self.alpha != 0:
                 del perm_source_loss, perm_source_logit
             if self.alpha_t is not 0:
-                del perm_target_loss, perm_source_logit
+                del perm_target_loss, perm_target_logit
 
         if False:
             self.model.eval()
