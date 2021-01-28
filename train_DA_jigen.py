@@ -36,9 +36,10 @@ def get_args():
     parser.add_argument("--network", choices=model_factory.nets_map.keys(), default="jigen_resnet18", help="Which network to use")
     parser.add_argument("--val_size", type=float, default="0.1", help="Validation size (between 0 and 1)")
     parser.add_argument("--train_all", type=bool, default=True, help="If true, all network weights will be trained")
-    parser.add_argument("--alpha", type=float, default=0.9, help="Weight of jigsaw resolution")
-    parser.add_argument("--alpha_t", type=float, default=0.9, help="Weight of jigsaw resolution for target domain data")
+    parser.add_argument("--alpha", type=float, default=0.7, help="Weight of jigsaw resolution")
+    parser.add_argument("--alpha_t", type=float, default=0.7, help="Weight of jigsaw resolution for target domain data")
     parser.add_argument("--beta", type=float, default=0.4, help="Fraction of shuffled images in the dataset")
+    parser.add_argument("--grid", type=int, default=3, help="Dimension of grid NxN")
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
@@ -55,7 +56,10 @@ class Trainer:
         model = model_factory.get_network(args.network)(classes=args.n_classes, permutations = args.n_perm)
         self.model = model.to(device)
 
-        self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta, DA = True)
+        self.grid_size = args.grid
+        self.jigsaw_editor = DatasetEdit(slice_size = args.grid, img_dim = args.image_size, P = args.n_perm)
+
+        self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta, self_sup_transformer = self.jigsaw_editor.edit, DA = True)
         self.target_loader = data_helper.get_val_dataloader(args)
 
 
