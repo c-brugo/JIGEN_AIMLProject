@@ -70,8 +70,9 @@ class DatasetEdit:
         # with [0,1,2,3,4,5,6,7,8] - original image
         P_hat_full = np.array(list(itertools.permutations(list(range(self.diff_pos)), self.diff_pos)))
         P_hat = np.delete(P_hat_full,0,0)
-        n = P_hat.shape[0]
         
+        n = P_hat.shape[0]
+        print("n: " + n)
         for i in trange(self.P):
             if i==0:
                 j = np.random.randint(n)
