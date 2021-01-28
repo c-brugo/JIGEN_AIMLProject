@@ -66,7 +66,7 @@ class DatasetEdit:
         outname = 'permutations/permutations_hamming_%d'%(self.slice_size)
         selection = "max"
         # with [0,1,2,3,4,5,6,7,8] - original image
-        P_hat_full = np.array(list(itertools.permutations(list(range(self.slice_size), self.slice_size))))
+        P_hat_full = np.array(list(itertools.permutations(list(range(self.slice_size)), self.slice_size)))
         P_hat = np.delete(P_hat_full,0,0)
         n = P_hat.shape[0]
         
