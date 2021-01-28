@@ -8,6 +8,7 @@ from data.data_helper import available_datasets
 from models import model_factory
 from optimizer.optimizer_helper import get_optim_and_scheduler
 from utils.Logger import Logger
+from data.DatasetEdit import DatasetEdit
 import numpy as np
 
 
@@ -154,16 +155,15 @@ class Trainer:
             if self.alpha_t is not 0:
                 del perm_target_loss, perm_source_logit
 
-        self.model.eval()
-        with torch.no_grad():
-            for phase, loader in self.test_loaders.items():
-                if phase=="test":
-                    continue
-                total = len(loader.dataset)
-                class_correct = self.do_test(loader)
-                class_acc = float(class_correct) / total
-                self.logger.log_test(phase, {"Classification Accuracy": class_acc})
-                self.results[phase][self.current_epoch] = class_acc
+        if False:
+            self.model.eval()
+            with torch.no_grad():
+                for phase, loader in self.test_loaders.items():
+                    total = len(loader.dataset)
+                    class_correct = self.do_test(loader)
+                    class_acc = float(class_correct) / total
+                    self.logger.log_test(phase, {"Classification Accuracy": class_acc})
+                    self.results[phase][self.current_epoch] = class_acc
 
     def do_test(self, loader):
         class_correct = 0

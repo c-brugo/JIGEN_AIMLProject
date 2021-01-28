@@ -127,16 +127,17 @@ class Trainer:
                                 data.shape[0])
                 del loss, class_loss, class_logit
 
-        self.model.eval()
-        with torch.no_grad():
-            for phase, loader in self.test_loaders.items():
-                if phase=="test":
-                    continue
-                total = len(loader.dataset)
-                class_correct = self.do_test(loader)
-                class_acc = float(class_correct) / total
-                self.logger.log_test(phase, {"Classification Accuracy": class_acc})
-                self.results[phase][self.current_epoch] = class_acc
+        if False:
+            self.model.eval()
+            with torch.no_grad():
+                for phase, loader in self.test_loaders.items():
+                    if phase=="test":
+                        continue
+                    total = len(loader.dataset)
+                    class_correct = self.do_test(loader)
+                    class_acc = float(class_correct) / total
+                    self.logger.log_test(phase, {"Classification Accuracy": class_acc})
+                    self.results[phase][self.current_epoch] = class_acc
 
     def do_test(self, loader):
         class_correct = 0
