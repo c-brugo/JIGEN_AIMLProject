@@ -16,12 +16,13 @@ class DatasetEdit:
     #best_hamming
     #M
     #N
+    #P: n of permutations
     #pos_auto_x
     #pos_auto_y
     #used_pos
     
     
-    def __init__(self,slice_size,img_dim):
+    def __init__(self,slice_size,img_dim, P):
         self.slice_size=slice_size
         #self.directory=directory
 
@@ -39,6 +40,7 @@ class DatasetEdit:
         self.pos_auto_y = np.arange(0,img_dim,self.N)#[y for y in range(0,img_dim,N)]
 
         self.diff_pos = slice_size^2 # slice_size = 3 so different positions are 9 (3^2) / 2 so 4 / 4 so 16
+        self.P = P
 
         self.permutations()
     
@@ -63,14 +65,14 @@ class DatasetEdit:
         return ind_x,ind_y
 
     def permutations(self):
-        outname = 'permutations/permutations_hamming_%d'%(self.slice_size)
+        outname = 'permutations/permutations_hamming_%d'%(self.diff_pos)
         selection = "max"
         # with [0,1,2,3,4,5,6,7,8] - original image
-        P_hat_full = np.array(list(itertools.permutations(list(range(self.slice_size)), self.slice_size)))
+        P_hat_full = np.array(list(itertools.permutations(list(range(self.diff_pos)), self.diff_pos)))
         P_hat = np.delete(P_hat_full,0,0)
         n = P_hat.shape[0]
         
-        for i in trange(30):
+        for i in trange(self.P):
             if i==0:
                 j = np.random.randint(n)
                 P = np.array(P_hat[j]).reshape([1,-1])
@@ -79,8 +81,6 @@ class DatasetEdit:
             
             P_hat = np.delete(P_hat,j,axis=0)
             D = cdist(P,P_hat, metric='hamming').mean(axis=0).flatten()
-            
-            j = D.argmax()
             
             if selection=='max':
                 j = D.argmax()
