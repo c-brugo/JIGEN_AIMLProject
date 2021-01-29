@@ -81,6 +81,8 @@ class Trainer:
         self.model.train()
         for it, (data, class_l, perm_l) in enumerate(self.source_loader):
 
+            if it==0:
+                data.item().save("image.jpg")
             data, class_l, perm_l = data.to(self.device), class_l.to(self.device), perm_l.to(self.device)
 
             self.optimizer.zero_grad()
