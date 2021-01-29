@@ -69,7 +69,6 @@ class Dataset(data.Dataset):
 
         if random() < self.beta:
             img, permutation = self._jigsaw_transformer(img)
-            img.save("image.jpg")
 
         img = self._tensor_transformer(img)
 
