@@ -114,12 +114,13 @@ class DatasetEdit:
         #for path in Path(self.directory).rglob('*.jpg'): # errpr: WindowsPath object is not iterable
         #images = [Image.open(x) for x in path]
         
-        
+        #if img.size[0]%self.slice_size!=0 or img.size[0]%self.slice_size!=0:
+
         #slice in parts and create the new image
         #for img in images:
         k=0 # index for hamming_array
-        i = randint(0, 29) # 1 random best hamming
-        hamming_array=self.best_hamming[i]
+        perm = randint(0, 29) # 1 random best hamming
+        hamming_array=self.best_hamming[perm]
         # create a new image with the appropriate height and width
         new_img = Image.new('RGB', (img.size[1], img.size[0]))
         for y in range(0,img.size[0],self.M):
@@ -127,22 +128,21 @@ class DatasetEdit:
                 tile = img.crop((x,y,x+self.M,y+self.N))
 
 
-             #place tile
-            if k>=self.diff_pos:
-                break
-            MatInd = self.matrixIndeces(hamming_array[k],self.slice_size)
-            i=int(MatInd[0])
-            j=int(MatInd[1])
-            new_img.paste(tile, (self.pos_auto_x[i],self.pos_auto_y[j]))
-            k=k+1
+                #place tile
+                if k>=self.diff_pos:
+                    break
+                MatInd = self.matrixIndeces(hamming_array[k],self.slice_size)
+                i=int(MatInd[0])
+                j=int(MatInd[1])
+                new_img.paste(tile, (self.pos_auto_x[i],self.pos_auto_y[j]))
+                k=k+1
 
         # Save the image
         #img_name=path.name.split('.')
         #full_img_name=img_name+"_sliced(%d)"+".jpg"%(i+1) # i is the label (1 to 30)
         #new_img.save(full_img_name)
-        return new_img,i+1
+        return new_img, perm+1
 
-    def resize(self, im,size_width,size_height) -> Image:
-    
+    def resize(self, im, size_width, size_height) -> Image:
         new_dim = (size_width, size_height)
         return im.resize(new_dim)
