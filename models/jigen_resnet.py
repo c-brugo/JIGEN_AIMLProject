@@ -90,6 +90,6 @@ def jigen_resnet18(classes, permutations):
         classes
         permutations
     """
-    model = JIGEN_ResNet(BasicBlock, [2, 2, 2, 2], classes=classes, permutations=permutations)
+    model = JIGEN_ResNet(BasicBlock, [2, 2, 2, 2], classes=classes, permutations=permutations+1)
     model.load_state_dict(model_zoo.load_url(model_urls['resnet18']), strict=False)
     return model
