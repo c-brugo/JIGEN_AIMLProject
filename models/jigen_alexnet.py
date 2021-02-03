@@ -72,7 +72,7 @@ class JIGEN_AlexNet(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         if alpha != 0:
-            x = JigenLayerF.apply(x, alpha)
+            #x = JigenLayerF.apply(x, alpha)
             x = self.jigsaw_classifier(x)
         else:
             x =  self.class_classifier(x)

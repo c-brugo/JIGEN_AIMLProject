@@ -96,7 +96,7 @@ class Trainer:
             _, cls_pred = class_logit.max(dim=1)
 
             loss = class_loss
-            loss.backward()
+            #loss.backward()
 
             #JIGSAW LOSS
             if self.alpha != 0:
@@ -104,10 +104,10 @@ class Trainer:
                 perm_loss = criterion(perm_logit, perm_l)
                 _, perm_pred = perm_logit.max(dim=1)
 
-                loss = perm_loss
-                loss.backward()
+                loss += self.alpha * perm_loss
+                #loss.backward()
 
-
+            loss.backward()
 
             self.optimizer.step()
 
@@ -115,7 +115,8 @@ class Trainer:
             if self.alpha != 0:
                 self.logger.log(it, len(self.source_loader),
                                 {"Class Loss ": class_loss.item(),
-                                "Jigsaw Loss ": perm_loss.item()},
+                                "Jigsaw Loss ": perm_loss.item(),
+                                "Total Loss ": loss.item()},
                                 {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item(),
                                 "Jigsaw Accuracy ": torch.sum(perm_pred == perm_l.data).item()},
                                 data.shape[0])
