@@ -104,7 +104,7 @@ class Trainer:
                 perm_loss = criterion(perm_logit, perm_l)
                 _, perm_pred = perm_logit.max(dim=1)
 
-                loss += self.alpha * perm_loss
+                loss = loss + self.alpha * perm_loss
                 #loss.backward()
 
             loss.backward()

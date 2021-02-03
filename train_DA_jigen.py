@@ -101,7 +101,7 @@ class Trainer:
             _, cls_pred = class_logit.max(dim=1)
 
             loss = class_loss
-            loss.backward()
+            #loss.backward()
 
             #JIGSAW LOSS (SOURCE)
             if self.alpha != 0:
@@ -113,8 +113,8 @@ class Trainer:
                 perm_source_loss = criterion(perm_source_logit, perm_l_source)
                 _, perm_source_pred = perm_source_logit.max(dim=1)
 
-                loss = perm_source_loss
-                loss.backward()
+                loss = loss + self.alpha * perm_source_loss
+                #loss.backward()
 
 
             #JIGSAW LOSS (TARGET)
@@ -127,15 +127,15 @@ class Trainer:
                 perm_target_loss = criterion(perm_target_logit, perm_l_target)
                 _, perm_target_pred = perm_target_logit.max(dim=1)
 
-                loss = perm_target_loss
-                loss.backward()
+                loss = loss + self.alpha_t * perm_target_loss
+                #loss.backward()
 
 
-
+            loss.backward()
             self.optimizer.step()
 
             class_l = class_l_ordered_source
-            losses_log = {"Class Loss ": class_loss.item()}
+            losses_log = {"Class Loss ": class_loss.item(), "Total Loss ": loss.item()}
             accuracy_log = {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item()}
 
             if self.alpha != 0:
