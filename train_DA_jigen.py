@@ -165,7 +165,7 @@ class Trainer:
                             losses_log,
                             accuracy_log,
                             data.shape[0])
-            del loss, class_loss, class_logit
+            del loss, class_loss, class_logit, emp_entropy_target_loss, class_target_logit
             if self.alpha != 0:
                 del perm_source_loss, perm_source_logit
             if self.alpha_t != 0:
