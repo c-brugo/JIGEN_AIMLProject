@@ -40,6 +40,7 @@ def get_args():
     parser.add_argument("--alpha", type=float, default=0.7, help="Weight of jigsaw resolution")
     parser.add_argument("--alpha_t", type=float, default=0.7, help="Weight of jigsaw resolution for target domain data")
     parser.add_argument("--beta", type=float, default=0.4, help="Fraction of shuffled images in the dataset")
+    parser.add_argument("--eta", type=float, default=0.1, help="Weight of DA target empirical entropy loss")
     parser.add_argument("--grid", type=int, default=3, help="Dimension of grid NxN")
 
     # tensorboard logger
@@ -48,6 +49,8 @@ def get_args():
 
     return parser.parse_args()
 
+def emp_entropy_loss(x):
+    return torch.sum(-F.softmax(x, 1) * F.log_softmax(x, 1), 1).mean()
 
 class Trainer:
     def __init__(self, args, device):
@@ -75,6 +78,7 @@ class Trainer:
 
         self.alpha = args.alpha
         self.alpha_t = args.alpha_t
+        self.eta = args.eta
 
     def _do_epoch(self):
         criterion = nn.CrossEntropyLoss()
@@ -102,6 +106,18 @@ class Trainer:
 
             loss = class_loss
             #loss.backward()
+
+
+            #CLASS EMPIRICAL ENTROPY LOSS TARGET
+            mask_ordered_target = class_l_ordered == -1
+            data_ordered_target = data_ordered[torch.nonzero(mask_ordered_target)][:,0]
+            class_target_logit = self.model(data_ordered_target)
+            emp_entropy_target_loss = emp_entropy_loss(class_target_logit)
+
+            loss = loss + self.eta * emp_entropy_target_loss
+
+
+
 
             #JIGSAW LOSS (SOURCE)
             if self.alpha != 0:
@@ -135,7 +151,7 @@ class Trainer:
             self.optimizer.step()
 
             class_l = class_l_ordered_source
-            losses_log = {"Class Loss ": class_loss.item(), "Total Loss ": loss.item()}
+            losses_log = {"Class Loss ": class_loss.item(), "Empirical Entropy Target Loss": emp_entropy_target_loss.item(), "Total Loss ": loss.item()}
             accuracy_log = {"Class Accuracy ": torch.sum(cls_pred == class_l.data).item()}
 
             if self.alpha != 0:
