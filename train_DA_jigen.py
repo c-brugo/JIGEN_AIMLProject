@@ -110,7 +110,7 @@ class Trainer:
 
             #CLASS EMPIRICAL ENTROPY LOSS TARGET
             mask_ordered_target = class_l_ordered == -1
-            if torch.nonzero(mask_ordered_target).size()[0]!=0:
+            if torch.nonzero(mask_ordered_target).size()[0]>0:
                 data_ordered_target = data_ordered[torch.nonzero(mask_ordered_target)][:,0]
                 class_target_logit = self.model(data_ordered_target)
                 emp_entropy_target_loss = emp_entropy_loss(class_target_logit)
