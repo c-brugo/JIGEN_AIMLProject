@@ -49,7 +49,7 @@ class DatasetEdit:
         
         if slice_size == 4:
             self.four_by_four = True
-        else
+        else:
             self.four_by_four = False
             
         self.permutations()
