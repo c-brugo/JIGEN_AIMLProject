@@ -55,7 +55,6 @@ class Trainer:
         model = model_factory.get_network(args.network)(classes=args.n_classes, permutations = args.n_perm)
         self.model = model.to(device)
 
-        self.grid_size = args.grid
         self.rotation_editor = DatasetEdit(img_dim = args.image_size, P = args.n_perm)
 
         self.source_loader, self.val_loader = data_helper.get_train_dataloader(args, beta = args.beta, self_sup_transformer = self.rotation_editor.randomRotation)

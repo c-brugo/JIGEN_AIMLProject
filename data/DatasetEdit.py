@@ -170,7 +170,7 @@ class DatasetEdit:
         odd_tile = img2.crop((x,y,x+self.M,y+self.N))
         
         # random position of the odd tile in img1
-        index_odd = randint(0,8) 
+        index_odd = randint(0,8)
         
         # paste the odd tile in img1
         MatInd = self.matrixIndeces(index_odd,self.slice_size)

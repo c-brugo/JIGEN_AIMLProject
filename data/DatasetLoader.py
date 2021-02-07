@@ -72,7 +72,7 @@ class Dataset(data.Dataset):
             if self.odd_one_out:
                 index_image_odd = randint(0, len(self.names)-1)
                 img2 = Image.open(self.data_path + '/' + self.names[index_image_odd]).convert('RGB')
-                img2 = self._image_transformer(img)
+                img2 = self._image_transformer(img2)
                 img, permutation = self._jigsaw_transformer(img, img2)
             else:
                 img, permutation = self._jigsaw_transformer(img)
