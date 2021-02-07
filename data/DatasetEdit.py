@@ -46,7 +46,12 @@ class DatasetEdit:
 
         self.diff_pos = slice_size**2 # slice_size = 3 so different positions are 9 (3^2) / 2 so 4 / 4 so 16
         self.P = P
-
+        
+        if slice_size == 4:
+            self.four_by_four = True
+        else
+            self.four_by_four = False
+            
         self.permutations()
     
     
@@ -73,7 +78,12 @@ class DatasetEdit:
         outname = 'permutations/permutations_hamming_%d'%(self.diff_pos)
         selection = "max"
         # with [0,1,2,3,4,5,6,7,8] - original image
-        P_hat_full = np.array(list(itertools.permutations(list(range(self.diff_pos)), self.diff_pos)))
+        if self.four_by_four == True:
+            P_hat_c1 = np.array(list(itertools.permutations(list(range(8)), 8)))
+            P_hat_c2 = np.array(list(itertools.permutations(list(range(8)), 8))) + 8
+            P_hat_full = np.concatenate((P_hat_c1, P_hat_c2), axis=1)
+        else
+            P_hat_full = np.array(list(itertools.permutations(list(range(self.diff_pos)), self.diff_pos)))
         P_hat = np.delete(P_hat_full,0,0)
         
         n = P_hat.shape[0]
