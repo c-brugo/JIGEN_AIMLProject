@@ -11,7 +11,7 @@ pacs_datasets = ["art_painting", "cartoon", "photo", "sketch"]
 
 available_datasets = pacs_datasets
 
-def get_train_dataloader(args, beta = 0, DA = False, self_sup_transformer=None):
+def get_train_dataloader(args, beta = 0, DA = False, self_sup_transformer=None, odd_one_out=False):
 
     dataset_list = args.source
     assert isinstance(dataset_list, list)
@@ -25,7 +25,7 @@ def get_train_dataloader(args, beta = 0, DA = False, self_sup_transformer=None):
         name_train, name_val, labels_train, labels_val = get_split_dataset_info(join(dirname(__file__), 'txt_lists', dname+'.txt'), args.val_size)
 
         if beta>0:
-            train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=self_sup_transformer, beta=beta)
+            train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=self_sup_transformer, beta=beta, odd_one_out=odd_one_out)
         else:
             train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer)
         

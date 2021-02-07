@@ -22,7 +22,7 @@ class DatasetEdit:
     #used_pos
     
     
-    def __init__(self,slice_size,img_dim, P):
+    def __init__(self, img_dim, P, slice_size=3):
         self.slice_size=slice_size
         #self.directory=directory
 
