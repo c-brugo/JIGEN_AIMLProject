@@ -27,17 +27,22 @@ class DatasetEdit:
         #self.directory=directory
 
         #img = Image.open(directory+'pic_001.jpg') # access a picture to retrieve size
+        self.img_input_nn_dim = img_dim
+
+        if img_dim%slice_size != 0:
+            self.img_dim = 224
+        else:
+            self.img_dim = img_dim
         
-        
-        self.M = img_dim//slice_size
-        self.N = img_dim//slice_size
+        self.M = self.img_dim//slice_size
+        self.N = self.img_dim//slice_size
 
         self.mappa3=[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]]
         self.mappa2=[[0,0],[1,0],[0,1],[1,1]]
         self.mappa4=[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2],[2,2],[3,2],[0,3],[1,3],[2,3],[3,3]]
 
-        self.pos_auto_x = np.arange(0,img_dim,self.M)
-        self.pos_auto_y = np.arange(0,img_dim,self.N)#[y for y in range(0,img_dim,N)]
+        self.pos_auto_x = np.arange(0,self.img_dim,self.M)
+        self.pos_auto_y = np.arange(0,self.img_dim,self.N)#[y for y in range(0,img_dim,N)]
 
         self.diff_pos = slice_size**2 # slice_size = 3 so different positions are 9 (3^2) / 2 so 4 / 4 so 16
         self.P = P
@@ -107,9 +112,10 @@ class DatasetEdit:
         """ slice the image in parts
             Args:
                 img (Image): opened image file
-                img_name (str): used to save the edited image
-                case (int): slice type 1 = 2x2, 2 = 3x3, 3 = 4x4
         """
+        if self.img_dim!=self.img_input_nn_dim:
+            img = self.resize(img, self.img_dim, self.img_dim)
+        
         # Open images and store them in a list
         #for path in Path(self.directory).rglob('*.jpg'): # errpr: WindowsPath object is not iterable
         #images = [Image.open(x) for x in path]
@@ -141,7 +147,58 @@ class DatasetEdit:
         #img_name=path.name.split('.')
         #full_img_name=img_name+"_sliced(%d)"+".jpg"%(i+1) # i is the label (1 to 30)
         #new_img.save(full_img_name)
+        if self.img_dim!=self.img_input_nn_dim:
+            new_img = self.resize(new_img, self.img_input_nn_dim, self.img_input_nn_dim)
         return new_img, perm+1
+    
+    def odd_one_out(self, img1, img2):
+        """ switch a random tile in puzzle of the first image 
+            with a random crop of the second image
+            Args:
+                img1 (Image): opened image file
+                img2 (Image): opened image file
+            Out:
+                img1 (Image): image with odd tile
+                index_odd (int): position of the odd tile
+        """
+
+        img1, _ = self.edit(img1)
+        
+        # random crop in img2
+        x = randint(0, img2.size[0] - self.M)
+        y = randint(0, img2.size[1] - self.N)
+        odd_tile = img2.crop((x,y,x+self.M,y+self.N))
+        
+        # random position of the odd tile in img1
+        index_odd = randint(0,8) 
+        
+        # paste the odd tile in img1
+        MatInd = self.matrixIndeces(index_odd,self.slice_size)
+        i = int(MatInd[0])
+        j = int(MatInd[1])
+        img1.paste(odd_tile, (self.pos_auto_x[i],self.pos_auto_y[j]))
+
+        return img1, index_odd+1
+    
+    def randomRotation(self, img):
+        """ rotate the image of a random multiple of 90 degree 
+            Args: 
+                img (Image): opened image file
+            Out:  
+                img (Image): rotated image
+                angle (int): angle of rotation
+        """
+        
+        angle = randint(0, 2)
+        
+        if angle == 0:
+            new_img = img.transpose(Image.ROTATE_90) 
+        elif angle == 1:
+            new_img = img.transpose(Image.ROTATE_180)
+        elif angle == 2:
+            new_img = img.transpose(Image.ROTATE_270)
+                
+        return new_img, angle+1
 
     def resize(self, im, size_width, size_height) -> Image:
         new_dim = (size_width, size_height)

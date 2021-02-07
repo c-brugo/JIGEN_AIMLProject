@@ -4,7 +4,7 @@ import torch.utils.data as data
 import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
-from random import sample, random
+from random import sample, random, randint
 
 
 def get_random_subset(names, labels, percent):
@@ -51,7 +51,7 @@ def image_tensor_transformer():
 
 
 class Dataset(data.Dataset):
-    def __init__(self, names, labels, path_dataset, img_transformer=None, jig_transformer=None, beta=0):
+    def __init__(self, names, labels, path_dataset, img_transformer=None, jig_transformer=None, beta=0, odd_one_out=False):
         self.data_path = path_dataset
         self.names = names
         self.labels = labels
@@ -59,6 +59,7 @@ class Dataset(data.Dataset):
         self._jigsaw_transformer = jig_transformer
         self._tensor_transformer = image_tensor_transformer()
         self.beta = beta
+        self.odd_one_out = odd_one_out
 
     def __getitem__(self, index):
 
@@ -68,7 +69,13 @@ class Dataset(data.Dataset):
         permutation = 0
 
         if random() < self.beta:
-            img, permutation = self._jigsaw_transformer(img)
+            if self.odd_one_out:
+                index_image_odd = randint(0, len(self.names)-1)
+                img2 = Image.open(self.data_path + '/' + self.names[index_image_odd]).convert('RGB')
+                img2 = self._image_transformer(img)
+                img, permutation = self._jigsaw_transformer(img, img2)
+            else:
+                img, permutation = self._jigsaw_transformer(img)
 
         img = self._tensor_transformer(img)
 
