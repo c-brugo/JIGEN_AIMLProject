@@ -82,7 +82,7 @@ class DatasetEdit:
             P_hat_c1 = np.array(list(itertools.permutations(list(range(8)), 8)))
             P_hat_c2 = np.array(list(itertools.permutations(list(range(8)), 8))) + 8
             P_hat_full = np.concatenate((P_hat_c1, P_hat_c2), axis=1)
-        else
+        else:
             P_hat_full = np.array(list(itertools.permutations(list(range(self.diff_pos)), self.diff_pos)))
         P_hat = np.delete(P_hat_full,0,0)
         
