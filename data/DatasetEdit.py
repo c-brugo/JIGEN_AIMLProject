@@ -119,7 +119,7 @@ class DatasetEdit:
         #slice in parts and create the new image
         #for img in images:
         k=0 # index for hamming_array
-        perm = randint(0, 29) # 1 random best hamming
+        perm = randint(0, self.P-1) # 1 random best hamming
         hamming_array=self.best_hamming[perm]
         # create a new image with the appropriate height and width
         new_img = Image.new('RGB', (img.size[1], img.size[0]))
