@@ -42,7 +42,7 @@ def get_train_dataloader(args, beta = 0, DA = False, self_sup_transformer=None, 
         for target_dname in target_dataset_list:
             name_train, name_val, labels_train, labels_val = get_split_dataset_info(join(dirname(__file__), 'txt_lists', target_dname+'.txt'), args.val_size)
             labels_train = [-1 for i in range(len(labels_train))]
-            target_train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=self_sup_transformer, beta=beta)
+            target_train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer, jig_transformer=self_sup_transformer, beta=beta, odd_one_out=odd_one_out)
             datasets.append(target_train_dataset)
 
 
